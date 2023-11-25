@@ -1,0 +1,13 @@
+# checkpoints
+checkpoints/
+
+#train_val_test
+train_val_test.npy
+
+#datasets
+cropped/
+output_frames/
+
+#IDEs
+.vscode
+__pycache__
