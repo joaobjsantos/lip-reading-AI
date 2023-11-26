@@ -11,3 +11,7 @@ output_frames/
 #IDEs
 .vscode
 __pycache__
+
+#videos
+*.mp4
+*.srt
