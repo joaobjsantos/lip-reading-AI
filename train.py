@@ -143,7 +143,7 @@ def train_nn_model(X_train, y_train, X_val, y_val):
     t2 = time.time()
     print(f"Training time : {t2 - t1} secs.")
 
-    return history
+    return history, model
 
 
 def show_training_graphs(history):
@@ -166,8 +166,13 @@ def show_training_graphs(history):
     plt.show()
 
 
-if __name__ == "__main__":
+def split_and_train():
     train_val_test = get_train_val_test_split()
-    history = train_nn_model(train_val_test[0], train_val_test[3], train_val_test[1], train_val_test[4])
+    history, model = train_nn_model(train_val_test[0], train_val_test[3], train_val_test[1], train_val_test[4])
     show_training_graphs(history)
     print(train_val_test.shape)
+    
+    return model
+
+if __name__ == "__main__":
+    split_and_train()

@@ -45,10 +45,15 @@ def test_model(model, X_test, y_test, cropped_dir="cropped"):
     accuracy = correct/len(actual_words)
     print(f"Accuracy = {accuracy} on completely unseen data")
 
-if __name__ == "__main__":
-    model = nn_model.get_cnn_model()
-    model.load_weights("checkpoints/cp.ckpt")
+
+def test_cnn_model(model=None):
+    if model is None:
+        model = nn_model.get_cnn_model()
+        model.load_weights("checkpoints/cp.ckpt")
     train_val_test = get_train_val_test_split()
     print(train_val_test[5])
     test_model(model, train_val_test[2], train_val_test[5])
+
+if __name__ == "__main__":
+    test_cnn_model()
 

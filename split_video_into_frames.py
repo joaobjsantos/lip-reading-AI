@@ -111,13 +111,15 @@ def split_video_by_words(video_path, subtitles_path, allowed_words = None):
             print(frame_number/cap.get(cv2.CAP_PROP_FRAME_COUNT)*100, "%")
     cap.release()
 
-    with open("output.txt", "w") as f:
+    with open("word_counts.txt", "w") as f:
         for word, count in word_counts.items():
             f.write(f"{word} {count}\n")
 
     with open("ascii_decoder.txt", "w") as f:
         for word, original_word in word_decoder.items():
             f.write(f"{word} {original_word}\n")
+
+    return word_counts, word_decoder
 
 
 if __name__ == "__main__":
