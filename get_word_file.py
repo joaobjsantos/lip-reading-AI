@@ -1,8 +1,9 @@
-from os import write
+import os
 import re
 import pyphen
 
 def parse_srt(file_path):
+    #print(os.listdir("./"))
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 

@@ -1,9 +1,11 @@
+import enum
 import numpy as np
 import imutils
 from imutils import face_utils
 import dlib
 import cv2
 import os
+import shutil
 
 
 SLASH_TYPE = "/"
@@ -135,21 +137,21 @@ def crop_and_save_image(img_path, write_img_path):
     # detect faces in the grayscale image
     rects = detector(gray, 1)
     if len(rects) != 1:
-        print("No faces detected for " + write_img_path)
+        print("No faces detected for " + img_path)
         return
     # print("RECTS", rects)
-    # Write the image to a PNG file.
-    for (i, rect) in enumerate(rects):
-        shape = predictor(gray, rect)
-        shape = face_utils.shape_to_np(shape)
-        name, i, j = 'mouth', 48, 68
-        # clone = gray.copy()
 
-        (x, y, w, h) = cv2.boundingRect(np.array([shape[i:j]]))        
-        roi = gray[y:y+h, x:x+w]
-        roi = imutils.resize(roi, width = 250, inter=cv2.INTER_CUBIC)        
-        print(write_img_path)
-        cv2.imwrite(write_img_path, roi)
+    # Write the image to a file.
+    rect = rects[0]
+    shape = predictor(gray, rect)
+    shape = face_utils.shape_to_np(shape)
+    i, j = 48, 68
+    # clone = gray.copy()
+
+    (x, y, w, h) = cv2.boundingRect(np.array([shape[i:j]]))        
+    roi = gray[y:y+h, x:x+w]
+    roi = imutils.resize(roi, width = 250, inter=cv2.INTER_CUBIC)        
+    print(write_img_path, cv2.imwrite(write_img_path, roi))
 
 
 def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_words=None):
@@ -157,8 +159,12 @@ def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_
 
     for word in os.listdir(dataset_folder):
         if not allowed_words or word in allowed_words:
+            print(word)
             word_folder = f"{base_folder}/{word}"
-            os.makedirs(word_folder, exist_ok=True)
+            if(os.path.exists(word_folder)):
+                continue
+
+            os.mkdir(word_folder)
             
             for word_instance in os.listdir(f"{dataset_folder}/{word}"):
                 word_instance_folder = f"{word_folder}/{word_instance}"
@@ -168,9 +174,12 @@ def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_
                     image_path = f"{dataset_folder}/{word}/{word_instance}/{frame}"
                     output_path = f"{word_instance_folder}/{frame}"
                     crop_and_save_image(image_path, output_path)
-                
-                if len(os.listdir(word_instance_folder)) == 0:
-                    os.rmdir(word_instance_folder)
+
+                if len(os.listdir(word_instance_folder)) < len(word):
+                    shutil.rmtree(word_instance_folder)
+
+                if len(os.listdir(word_folder)) >= 10:
+                    break
 
 if __name__ == "__main__":
     # crop_and_save_image("tst_img.jpg", "tst_img_cropped.jpg")

@@ -30,8 +30,7 @@ def test_miraclvc1(model, X_test, y_test):
     print(f"Accuracy = {accuracy} on completely unseen data")
 
 
-def test_model(model, X_test, y_test, cropped_dir="cropped"):
-    words = os.listdir(cropped_dir)
+def test_model(model, X_test, y_test, words):
     ypred = model.predict(X_test)
     predicted_words = [words[i] for i in np.argmax(ypred, axis=1)]
     actual_words = [words[i] for i in np.argmax(y_test, axis=1)] 
@@ -46,14 +45,16 @@ def test_model(model, X_test, y_test, cropped_dir="cropped"):
     print(f"Accuracy = {accuracy} on completely unseen data")
 
 
-def test_cnn_model(model=None):
-    if model is None:
-        model = nn_model.get_cnn_model()
-        model.load_weights("checkpoints/cp.ckpt")
+def get_model_and_test(model=None):
     train_val_test = get_train_val_test_split()
-    print(train_val_test[5])
-    test_model(model, train_val_test[2], train_val_test[5])
+
+    if model is None:
+        model = nn_model.get_cnn_model(num_classes=train_val_test[5].shape[1])
+        model.load_weights("checkpoints/cp.ckpt")
+        
+    print(train_val_test[5].shape)
+    test_model(model, train_val_test[2], train_val_test[5], train_val_test[6])
 
 if __name__ == "__main__":
-    test_cnn_model()
+    get_model_and_test()
 

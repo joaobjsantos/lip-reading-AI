@@ -1,7 +1,7 @@
-from split_video_into_frames import split_video_by_words
+from split_video_into_frames import split_video_by_words, get_word_counts_from_file
 from crop import crop_dataset
 from train import split_and_train
-from test import test_cnn_model
+from test import get_model_and_test
 
 
 def get_frequent_words(word_counts, min_word_count):
@@ -13,18 +13,22 @@ def get_frequent_words(word_counts, min_word_count):
 
 
 if __name__ == "__main__":
-    video_path = ""
-    subtitles_path = ""
+    # video_path = "ric2.mp4"
+    # subtitles_path = "ric2.srt"
 
-    word_counts, word_decoder = split_video_by_words(video_path, subtitles_path)
-    print("Subtitles processed")
+    # word_counts, word_decoder = split_video_by_words(video_path, subtitles_path)
+    # print("Subtitles processed")
 
-    crop_dataset(allowed_words=get_frequent_words(word_counts, 10))
-    print("Dataset cropped")
+    # word_counts = get_word_counts_from_file()
+    # for w,c in word_counts.items():
+    #     print(w, c)
 
-    model = split_and_train()
+    # crop_dataset(allowed_words=get_frequent_words(word_counts, 5))
+    # print("Dataset cropped")
+
+    model = split_and_train(gpu=True)
     print("Model trained")
 
-    test_cnn_model(model)
+    get_model_and_test(model)
     print("Model tested")
 
