@@ -106,3 +106,7 @@ def get_cnn_lstm_model(image_size=29, num_classes=7):
     model.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
 
     return model
+
+
+if __name__ == "__main__":
+    model = get_cnn_lstm_model()

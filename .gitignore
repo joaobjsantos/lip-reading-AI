@@ -5,8 +5,8 @@ checkpoints/
 train_val_test.npy
 
 #datasets
-cropped/
-output_frames/
+cropped*/
+output_frames*/
 *.txt
 
 #IDEs

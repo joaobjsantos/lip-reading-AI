@@ -13,22 +13,24 @@ def get_frequent_words(word_counts, min_word_count):
 
 
 if __name__ == "__main__":
-    # video_path = "ric2.mp4"
-    # subtitles_path = "ric2.srt"
+    video_path = "ric2.mp4"
+    subtitles_path = "ric2.srt"
 
-    # word_counts, word_decoder = split_video_by_words(video_path, subtitles_path)
-    # print("Subtitles processed")
+    word_counts, word_decoder = split_video_by_words(video_path, subtitles_path)
+    print("Subtitles processed")
 
-    # word_counts = get_word_counts_from_file()
+    word_counts = get_word_counts_from_file()
     # for w,c in word_counts.items():
     #     print(w, c)
 
-    # crop_dataset(allowed_words=get_frequent_words(word_counts, 5))
+    print(get_frequent_words(word_counts, min_word_count=20))
+
+    # crop_dataset(allowed_words=get_frequent_words(word_counts, 40))
     # print("Dataset cropped")
 
-    model = split_and_train(gpu=True)
-    print("Model trained")
+    # model = split_and_train(gpu=True)
+    # print("Model trained")
 
-    get_model_and_test(model)
-    print("Model tested")
+    # get_model_and_test(model)
+    # print("Model tested")
 

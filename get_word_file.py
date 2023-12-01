@@ -50,6 +50,7 @@ def split_words_spaces_len(subtitles, fps, write_path=None):
             current_time = subtitle['start_time']
             offset = 0.1
             for word in words:
+                word = word.lower()
                 word_duration = len(word) / len(subtitle['text']) * total_duration
                 word_end_time = current_time + word_duration
 
