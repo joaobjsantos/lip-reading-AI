@@ -23,7 +23,7 @@ def parse_srt(file_path):
         elif line == '' or re.match(r'\d+', line) or re.match(r'\[.*\]', line):
             continue
         elif current_subtitle:
-            current_subtitle['text'] += line
+            current_subtitle['text'] += line.replace(":"," ")
 
     if current_subtitle and 'text' in current_subtitle and current_subtitle['text'].strip():
         subtitles.append(current_subtitle)
@@ -55,10 +55,15 @@ def split_words_spaces_len(subtitles, fps, write_path=None):
                 word_end_time = current_time + word_duration
 
                 start_time = round((current_time + offset) * fps)
-                end_time = round((word_end_time + offset) * fps)
+                end_time = round((word_end_time) * fps)
                 processed_subtitles.append(f"{word} {start_time} {end_time}")
                 # write_to_file(word, round((current_time + offset) * 30), round((word_end_time + offset) * 30))
                 current_time = word_end_time + silence_interval
+
+    if write_path != None:
+        with open(write_path, "w", encoding="utf-8") as output_file:
+            output_file.writelines(processed_subtitle + '\n' for processed_subtitle in processed_subtitles)
+    return processed_subtitles
 
 
 def split_words_len(subtitles, fps, write_path=None):
@@ -74,6 +79,7 @@ def split_words_len(subtitles, fps, write_path=None):
             current_time = subtitle['start_time']
 
             for word in words:
+                word = word.lower()
                 word_duration = len(word) / len(subtitle['text']) * total_word_duration
                 word_end_time = current_time + word_duration
 
@@ -85,7 +91,7 @@ def split_words_len(subtitles, fps, write_path=None):
 
     if write_path != None:
         with open(write_path, "w", encoding="utf-8") as output_file:
-            output_file.writelines(processed_subtitles)
+            output_file.writelines(processed_subtitle + '\n' for processed_subtitle in processed_subtitles)
     return processed_subtitles
 
 
@@ -95,7 +101,7 @@ def split_words_syllables(subtitles, fps=30.0, write_path=None):
 
     for subtitle in subtitles:
         words = subtitle['text'].split()
-        word_syllables = {word: dic.inserted(word).split("-") for word in words}
+        word_syllables = {word.lower(): dic.inserted(word.lower()).split("-") for word in words}
         total_syllables = sum(len(syllables) for syllables in word_syllables.values())
         if total_syllables > 0:
             total_duration = subtitle['end_time'] - subtitle['start_time']
@@ -104,6 +110,7 @@ def split_words_syllables(subtitles, fps=30.0, write_path=None):
             current_time = subtitle['start_time']
 
             for word in words:
+                word = word.lower()
                 word_duration = len(word_syllables[word]) / total_syllables * total_duration
                 word_end_time = current_time + word_duration
 
@@ -119,7 +126,8 @@ def split_words_syllables(subtitles, fps=30.0, write_path=None):
     return processed_subtitles
 
 def time_subtitles(substitles_path, fps=30.0):
-    return split_words_syllables(parse_srt(substitles_path), fps, write_path="processed_subtitles.txt")
+    # return split_words_syllables(parse_srt(substitles_path), fps, write_path="processed_subtitles.txt")
+    return split_words_spaces_len(parse_srt(substitles_path), fps, write_path="processed_subtitles.txt")
 
 if __name__ == "__main__":
     srt_file_path = "teste.srt"

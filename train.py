@@ -155,13 +155,13 @@ def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_t
     return train_val_test
 
 
-def get_train_val_test_split():
+def get_train_val_test_split(cropped_dir="cropped"):
     # check if train_val_test.npy exists
     if os.path.exists("train_val_test.npy"):
         with open("train_val_test.npy", "rb") as f:
             train_val_test = np.load(f, allow_pickle=True)
         return train_val_test
-    return generate_train_val_test()
+    return generate_train_val_test(cropped_dir=cropped_dir)
 
 
 
@@ -179,7 +179,7 @@ def train_nn_model(X_train, y_train, X_val, y_val, gpu=False, model=None):
     es_callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=4)
 
     if model is None:
-        model = nn_model.get_cnn_lstm_model(num_classes=y_train.shape[1])
+        model = nn_model.get_4_layer_cnn_model(num_classes=y_train.shape[1])
 
     if gpu:
         with tf.device('/gpu:0'):
@@ -218,12 +218,12 @@ def show_training_graphs(history):
     plt.show()
 
 
-def split_only():
-    train_val_test = get_train_val_test_split()
+def split_only(cropped_dir="cropped"):
+    train_val_test = get_train_val_test_split(cropped_dir=cropped_dir)
     return train_val_test
 
-def split_and_train(gpu=False):
-    train_val_test = get_train_val_test_split()
+def split_and_train(cropped_dir="cropped", gpu=False):
+    train_val_test = get_train_val_test_split(cropped_dir=cropped_dir)
     history, model = train_nn_model(train_val_test[0], train_val_test[3], train_val_test[1], train_val_test[4], gpu)
     show_training_graphs(history)
     print(train_val_test.shape)

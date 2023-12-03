@@ -178,7 +178,7 @@ def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_
                 if len(os.listdir(word_instance_folder)) < len(word):
                     shutil.rmtree(word_instance_folder)
 
-                if len(os.listdir(word_folder)) >= 10:
+                if len(os.listdir(word_folder)) >= 40:
                     break
 
 if __name__ == "__main__":
