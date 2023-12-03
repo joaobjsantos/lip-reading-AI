@@ -179,7 +179,7 @@ def train_nn_model(X_train, y_train, X_val, y_val, gpu=False, model=None):
     es_callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=4)
 
     if model is None:
-        model = nn_model.get_4_layer_cnn_model(num_classes=y_train.shape[1])
+        model = nn_model.get_cnn_model(num_classes=y_train.shape[1])
 
     if gpu:
         with tf.device('/gpu:0'):
