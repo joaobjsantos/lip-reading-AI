@@ -44,6 +44,19 @@ def split_video_by_words_file(video_path, words_file):
 
 
 def split_video_by_words(video_path, subtitles_path, allowed_words = None, output_dir = "output_frames"):
+    """
+    Splits a video into frames based on the provided subtitles.
+    
+    Args:
+        video_path (str): The path to the video file.
+        subtitles_path (str): The path to the subtitles file.
+        allowed_words (list, optional): A list of words to include in the frame extraction. Defaults to None.
+        output_dir (str, optional): The directory to save the extracted frames. Defaults to "output_frames".
+    
+    Returns:
+        tuple: A tuple containing the word counts and word decoder mapping.
+    """
+
     video_id = os.path.splitext(os.path.basename(video_path))[0]
 
     os.makedirs(output_dir, exist_ok=True)
@@ -126,6 +139,15 @@ def split_video_by_words(video_path, subtitles_path, allowed_words = None, outpu
 
 
 def get_word_counts_from_file(words_file="word_counts.txt"):
+    """
+    Reads a file containing word counts and returns a dictionary of word counts.
+    
+    Args:
+        words_file (str): The path to the file containing word counts. Default is "word_counts.txt".
+    
+    Returns:
+        dict: A dictionary where the keys are words and the values are their corresponding counts.
+    """
     word_counts = {}
     with open(words_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -138,6 +160,15 @@ def get_word_counts_from_file(words_file="word_counts.txt"):
 
 
 def get_word_counts(dataset_folder="output_frames"):
+    """
+    Returns a dictionary containing the count of files in each subdirectory of the specified dataset folder.
+
+    Parameters:
+        dataset_folder (str): The path to the dataset folder. Default is "output_frames".
+
+    Returns:
+        dict: A dictionary where the keys are the subdirectory names and the values are the count of files in each subdirectory.
+    """
     word_counts = {}
     for word in os.listdir(dataset_folder):
         if os.path.isdir(os.path.join(dataset_folder, word)):

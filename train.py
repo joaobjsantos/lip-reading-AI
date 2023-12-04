@@ -10,6 +10,15 @@ from sklearn.utils import shuffle
 from split_video_into_frames import get_word_counts_from_file
 
 def normalize_it(X):
+    """
+    Normalizes the input array `X` by scaling its values between 0 and 1.
+
+    Parameters:
+    - X (ndarray): The input array to be normalized.
+
+    Returns:
+    - ndarray: The normalized array.
+    """
     print(X.shape)
     v_min = X.min(axis=(2, 3), keepdims=True)
     v_max = X.max(axis=(2, 3), keepdims=True)
@@ -18,7 +27,7 @@ def normalize_it(X):
     return X
 
 
-def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_test_split=[0.6, 0.2, 0.2]):
+def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_test_split=[0.6, 0.2, 0.2], max_word_count=40):
     max_seq_length = 29
 
     X_train = []
@@ -31,8 +40,6 @@ def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_t
 
     MAX_WIDTH = 100
     MAX_HEIGHT = 100
-
-    MAX_WORD_COUNT = 10
 
 
     if word_counts is None:
@@ -54,11 +61,11 @@ def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_t
 
         frequent_words.append(word)
 
-        if word_count > MAX_WORD_COUNT:
-            word_count = MAX_WORD_COUNT
+        if word_count > max_word_count:
+            word_count = max_word_count
             
 
-        word_i = 0
+        word_i = 1
 
         for word_instance in os.listdir(word_folder):
             sequence = []
@@ -92,7 +99,7 @@ def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_t
 
             word_i += 1
 
-            if word_i >= MAX_WORD_COUNT:
+            if word_i >= max_word_count:
                 break
 
 
@@ -155,18 +162,34 @@ def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_t
     return train_val_test
 
 
-def get_train_val_test_split(cropped_dir="cropped"):
+def get_train_val_test_split(cropped_dir="cropped", max_word_count=40):
     # check if train_val_test.npy exists
     if os.path.exists("train_val_test.npy"):
         with open("train_val_test.npy", "rb") as f:
             train_val_test = np.load(f, allow_pickle=True)
         return train_val_test
-    return generate_train_val_test(cropped_dir=cropped_dir)
+    return generate_train_val_test(cropped_dir=cropped_dir, max_word_count=max_word_count)
 
 
 
-def train_nn_model(X_train, y_train, X_val, y_val, gpu=False, model=None):
+def train_nn_model(X_train, y_train, X_val, y_val, gpu=False, model=None, model_name="3_layer_CNN"):
+    """
+	Train the neural network model.
 
+	Parameters:
+	- X_train: The training data.
+	- y_train: The target labels for the training data.
+	- X_val: The validation data.
+	- y_val: The target labels for the validation data.
+	- gpu: Whether to use GPU for training. Default is False.
+	- model: The pre-trained model to use. Default is None.
+	- model_name: The name of the model architecture to use. Default is "3_layer_CNN".
+
+	Returns:
+	- history: The training history.
+	- model: The trained model.
+    """
+    
     if gpu:
         gpus = tf.config.list_physical_devices('GPU')
         if gpus:
@@ -179,7 +202,12 @@ def train_nn_model(X_train, y_train, X_val, y_val, gpu=False, model=None):
     es_callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=4)
 
     if model is None:
-        model = nn_model.get_cnn_model(num_classes=y_train.shape[1])
+        if model_name == "3_layer_CNN":
+            model = nn_model.get_cnn_model(num_classes=y_train.shape[1])
+        elif model_name == "4_layer_CNN":
+            model = nn_model.get_4_layer_cnn_model(num_classes=y_train.shape[1])
+        else:
+            model = nn_model.get_cnn_lstm_model(num_classes=y_train.shape[1])
 
     if gpu:
         with tf.device('/gpu:0'):
@@ -199,6 +227,15 @@ def train_nn_model(X_train, y_train, X_val, y_val, gpu=False, model=None):
 
 
 def show_training_graphs(history):
+    """
+    Generates and displays training graphs based on the history of the trained model.
+
+    Args:
+        history (object): The history object that contains the training history.
+
+    Returns:
+        None
+    """
     plt.plot(history.history['accuracy'])
     # plt.plot(history.history['val_accuracy'])
     plt.title('Model accuracy')
@@ -219,12 +256,21 @@ def show_training_graphs(history):
 
 
 def split_only(cropped_dir="cropped"):
+    """
+    Generate the train, validation, and test split for the given directory.
+
+    Args:
+        cropped_dir (str, optional): The directory path where the cropped images are stored. Defaults to "cropped".
+
+    Returns:
+        dict: A dictionary containing the train, validation, and test split.
+    """
     train_val_test = get_train_val_test_split(cropped_dir=cropped_dir)
     return train_val_test
 
-def split_and_train(cropped_dir="cropped", gpu=False):
-    train_val_test = get_train_val_test_split(cropped_dir=cropped_dir)
-    history, model = train_nn_model(train_val_test[0], train_val_test[3], train_val_test[1], train_val_test[4], gpu)
+def split_and_train(cropped_dir="cropped", gpu=False, model_name="3_layer_CNN", max_word_count=40):
+    train_val_test = get_train_val_test_split(cropped_dir=cropped_dir, max_word_count=max_word_count)
+    history, model = train_nn_model(train_val_test[0], train_val_test[3], train_val_test[1], train_val_test[4], gpu, model_name=model_name)
     show_training_graphs(history)
     print(train_val_test.shape)
     

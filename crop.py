@@ -1,4 +1,3 @@
-import enum
 import numpy as np
 import imutils
 from imutils import face_utils
@@ -154,7 +153,7 @@ def crop_and_save_image(img_path, write_img_path):
     print(write_img_path, cv2.imwrite(write_img_path, roi))
 
 
-def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_words=None):
+def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_words=None, max_word_instances=40):
     os.makedirs(base_folder, exist_ok=True)
 
     for word in os.listdir(dataset_folder):
@@ -178,7 +177,7 @@ def crop_dataset(base_folder="cropped", dataset_folder="output_frames", allowed_
                 if len(os.listdir(word_instance_folder)) < len(word):
                     shutil.rmtree(word_instance_folder)
 
-                if len(os.listdir(word_folder)) >= 40:
+                if len(os.listdir(word_folder)) >= max_word_instances:
                     break
 
 if __name__ == "__main__":

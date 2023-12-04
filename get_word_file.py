@@ -3,6 +3,18 @@ import re
 import pyphen
 
 def parse_srt(file_path):
+    """
+    Parses an SRT file and returns a list of subtitles.
+    
+    Parameters:
+        file_path (str): The path to the SRT file.
+        
+    Returns:
+        list: A list of dictionaries, each containing the following keys:
+            - 'text': The text of the subtitle.
+            - 'start_time': The start time of the subtitle in seconds.
+            - 'end_time': The end time of the subtitle in seconds.
+    """
     #print(os.listdir("./"))
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -35,6 +47,20 @@ def timestamp_to_seconds(timestamp):
     return 3600 * h + 60 * m + s
 
 def split_words_spaces_len(subtitles, fps, write_path=None):
+    """
+    Generate a list of processed subtitles by splitting the words by length and spaces in each subtitle's text and calculating the start and end times for each word.
+
+    Parameters:
+    - subtitles (list): A list of dictionaries representing the subtitles. Each dictionary should have the following keys:
+        - 'text' (str): The text of the subtitle.
+        - 'start_time' (float): The start time of the subtitle.
+        - 'end_time' (float): The end time of the subtitle.
+    - fps (float): The frames per second of the video.
+    - write_path (str, optional): The path to write the processed subtitles. Defaults to None.
+
+    Returns:
+    - processed_subtitles (list): A list of strings representing the processed subtitles. Each string contains the word, start time, and end time of the word, separated by spaces.
+    """
     processed_subtitles = []
 
     for subtitle in subtitles:
@@ -67,6 +93,20 @@ def split_words_spaces_len(subtitles, fps, write_path=None):
 
 
 def split_words_len(subtitles, fps, write_path=None):
+    """
+    Generate a list of processed subtitles by splitting the words by length in each subtitle's text and calculating the start and end times for each word.
+
+    Parameters:
+    - subtitles (list): A list of dictionaries representing the subtitles. Each dictionary should have the following keys:
+        - 'text' (str): The text of the subtitle.
+        - 'start_time' (float): The start time of the subtitle.
+        - 'end_time' (float): The end time of the subtitle.
+    - fps (float): The frames per second of the video.
+    - write_path (str, optional): The path to write the processed subtitles. Defaults to None.
+
+    Returns:
+    - processed_subtitles (list): A list of strings representing the processed subtitles. Each string contains the word, start time, and end time of the word, separated by spaces.
+    """
     processed_subtitles = []
 
     for subtitle in subtitles:
@@ -96,6 +136,20 @@ def split_words_len(subtitles, fps, write_path=None):
 
 
 def split_words_syllables(subtitles, fps=30.0, write_path=None):
+    """
+    Generate a list of processed subtitles by splitting the words by syllables in each subtitle's text and calculating the start and end times for each word.
+
+    Parameters:
+    - subtitles (list): A list of dictionaries representing the subtitles. Each dictionary should have the following keys:
+        - 'text' (str): The text of the subtitle.
+        - 'start_time' (float): The start time of the subtitle.
+        - 'end_time' (float): The end time of the subtitle.
+    - fps (float): The frames per second of the video.
+    - write_path (str, optional): The path to write the processed subtitles. Defaults to None.
+
+    Returns:
+    - processed_subtitles (list): A list of strings representing the processed subtitles. Each string contains the word, start time, and end time of the word, separated by spaces.
+    """
     processed_subtitles = []
     dic = pyphen.Pyphen(lang="pt_PT")
 

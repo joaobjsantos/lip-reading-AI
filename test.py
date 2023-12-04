@@ -31,6 +31,18 @@ def test_miraclvc1(model, X_test, y_test):
 
 
 def test_model(model, X_test, y_test, words):
+    """
+    Calculate the accuracy of a given model on a test dataset.
+
+    Parameters:
+    - model: The trained model to evaluate.
+    - X_test: The input features of the test dataset.
+    - y_test: The true labels of the test dataset.
+    - words: The list of words corresponding to the classes.
+
+    Returns:
+    None
+    """
     ypred = model.predict(X_test)
     predicted_words = [words[i] for i in np.argmax(ypred, axis=1)]
     actual_words = [words[i] for i in np.argmax(y_test, axis=1)] 
@@ -46,6 +58,15 @@ def test_model(model, X_test, y_test, words):
 
 
 def get_model_and_test(model=None):
+    """
+    Gets the model and performs testing on the given model.
+    
+    Parameters:
+        model (optional): A pre-trained model to use for testing. If not provided, a trained model will be loaded from the checkpoints.
+    
+    Returns:
+        None
+    """
     train_val_test = get_train_val_test_split()
 
     if model is None:
