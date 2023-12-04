@@ -28,6 +28,22 @@ def normalize_it(X):
 
 
 def generate_train_val_test(cropped_dir="cropped", word_counts=None, train_val_test_split=[0.6, 0.2, 0.2], max_word_count=40):
+    """
+    Generate training, validation, and test data from cropped lip images.
+
+    Parameters:
+    - `cropped_dir` (str): The directory containing the cropped lip images. Default is "cropped".
+    - `word_counts` (dict): A dictionary mapping word classes to their counts. Default is None.
+    - `train_val_test_split` (list): A list of three floats representing the train, validation, and test split ratios. Default is [0.6, 0.2, 0.2].
+    - `max_word_count` (int): The maximum number of word instances to consider for each word class. Default is 40.
+
+    Returns:
+    - `train_val_test` (ndarray): A NumPy array containing the training, validation, and test data.
+    
+    The function generates training, validation, and test data from cropped lip images stored in the `cropped_dir` directory. It uses the `word_counts` parameter to determine the number of instances for each word class. The function splits the data according to the `train_val_test_split` ratios and pads the sequences to a maximum length of `max_seq_length`. The data is then normalized and converted to constant size 3D tensors. Finally, the data is shuffled and saved to a file named "train_val_test.npy".
+
+    Note: The function assumes that the cropped lip images are stored in the following directory structure: `cropped_dir/word/instance/frame`.
+    """
     max_seq_length = 29
 
     X_train = []
@@ -269,6 +285,16 @@ def split_only(cropped_dir="cropped"):
     return train_val_test
 
 def split_and_train(cropped_dir="cropped", gpu=False, model_name="3_layer_CNN", max_word_count=40):
+    """
+    This function splits the data into training, validation, and testing sets and trains a neural network model.
+
+    :param cropped_dir: (str) The directory containing the cropped images. Default is "cropped".
+    :param gpu: (bool) Whether to use GPU for training. Default is False.
+    :param model_name: (str) The name of the model to be trained. Default is "3_layer_CNN".
+    :param max_word_count: (int) The maximum instance count for each word. Default is 40.
+    
+    :return: (tf.keras.Model) The trained neural network model.
+    """
     train_val_test = get_train_val_test_split(cropped_dir=cropped_dir, max_word_count=max_word_count)
     history, model = train_nn_model(train_val_test[0], train_val_test[3], train_val_test[1], train_val_test[4], gpu, model_name=model_name)
     show_training_graphs(history)
